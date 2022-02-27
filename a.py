@@ -10,9 +10,13 @@ bufferSize          = 1024
 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 # Send to server using created UDP socket
+UDPClientSocket.settimeout(1)
 while(True):
     UDPClientSocket.sendto(bytesToSend, serverAddressPort)
     t = time.time()
-    msgFromServer = UDPClientSocket.recvfrom(bufferSize)
+    try:
+        msgFromServer = UDPClientSocket.recvfrom(bufferSize)
+    except:
+        continue
     elapsed = time.time()-t
     print("From %s, elapsed: %d" % (msgFromServer[0].decode(),elapsed))
