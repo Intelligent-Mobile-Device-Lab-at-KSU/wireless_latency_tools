@@ -1,6 +1,8 @@
 import socket
 import time
 
+msgFromClient       = "0"
+bytesToSend         = str.encode(msgFromClient)
 serverAddressPort   = ("127.0.0.1", 4400)
 bufferSize          = 1
 
