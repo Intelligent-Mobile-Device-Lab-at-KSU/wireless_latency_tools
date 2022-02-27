@@ -3,21 +3,17 @@ import time
 
 msgFromClient       = "0"
 bytesToSend         = str.encode(msgFromClient)
-serverAddressPort   = ("127.0.0.1", 4400)
+serverAddressPort   = ("127.0.0.1", 14400)
 bufferSize          = 1024
 
 # Create a UDP socket at client side
 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 # Send to server using created UDP socket
-UDPClientSocket.settimeout(1)
 while(True):
+    print("sending...")
     UDPClientSocket.sendto(bytesToSend, serverAddressPort)
     t = time.time()
-    try:
-        msgFromServer = UDPClientSocket.recvfrom(bufferSize)
-        elapsed = time.time()-t
-        print("From %s, elapsed: %d" % (msgFromServer[0].decode(),elapsed))
-    except:
-        continue
-    UDPClientSocket.settimeout(None)
+    msgFromServer = UDPClientSocket.recvfrom(bufferSize)
+    elapsed = time.time()-t
+    print("From %s, elapsed: %d" % (msgFromServer[0].decode(),elapsed))
