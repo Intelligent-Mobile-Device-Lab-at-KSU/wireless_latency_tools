@@ -16,7 +16,8 @@ while(True):
     t = time.time()
     try:
         msgFromServer = UDPClientSocket.recvfrom(bufferSize)
+        elapsed = time.time()-t
+        print("From %s, elapsed: %d" % (msgFromServer[0].decode(),elapsed))
     except:
         continue
-    elapsed = time.time()-t
-    print("From %s, elapsed: %d" % (msgFromServer[0].decode(),elapsed))
+    UDPClientSocket.settimeout(None)
