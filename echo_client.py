@@ -10,4 +10,5 @@ tcp_client_socket.connect((HOST, PORT))
 while 1:
     tcp_client_socket.sendall(b"Hello, world")
     data = tcp_client_socket.recv(1024)
-print(f"Received {data!r}")
+    print(f"Received {data!r}")
+    time.sleep(1)
