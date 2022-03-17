@@ -8,7 +8,9 @@ PORT = 14400  # The port used by the server
 tcp_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_client_socket.connect((HOST, PORT))
 while 1:
-    tcp_client_socket.sendall(b"Hello, world")
-    data = tcp_client_socket.recv(1024)
-    print(f"Received {data!r}")
+    tcp_client_socket.sendall(b"0")
+    t=time.perf_counter()
+    data = tcp_client_socket.recv(1)
+    elapsed = (time.perf_counter()-t)*1000 #ms
+    print("%.4f" % (elapsed))
     time.sleep(1)
