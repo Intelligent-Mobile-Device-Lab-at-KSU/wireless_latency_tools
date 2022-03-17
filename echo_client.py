@@ -9,5 +9,5 @@ tcp_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_client_socket.connect((HOST, PORT))
 while 1:
     tcp_client_socket.sendall(b"Hello, world")
-    data = s.recv(1024)
+    data = tcp_client_socket.recv(1024)
 print(f"Received {data!r}")
