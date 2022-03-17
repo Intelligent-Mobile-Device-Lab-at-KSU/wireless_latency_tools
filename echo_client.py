@@ -10,7 +10,7 @@ tcp_client_socket.connect((HOST, PORT))
 while 1:
     tcp_client_socket.sendall(b"0")
     t=time.perf_counter()
-    data = tcp_client_socket.recv(1)
+    data = tcp_client_socket.recv(1024)
     elapsed = (time.perf_counter()-t)*1000 #ms
     print("%.4f" % (elapsed))
     time.sleep(1)
