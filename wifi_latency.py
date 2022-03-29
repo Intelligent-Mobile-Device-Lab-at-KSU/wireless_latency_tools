@@ -58,24 +58,22 @@ if username == 'b':
   UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
   UDPServerSocket.bind((myIP, 5000))
 
+pktnumber = 0
 # Device 1 is A
 if username == 'a':
     print("Ensure b displays \"Listening for packets...\" then when ready...")
     x=input("Press any key to begin one-way latency test...")
-    while True:
-        print('Sending Packets')
-        pktnumber = 0
-        while (pktnumber < NumTimesToRun):
-            s = ''.join(random.choice(string.digits) for _ in range(pktsize))
-            udpClientSock.sendto(s.encode(), (remoteIP,5000))
-            tcp_client_socket.sendall("1".encode())
-            print("Sent Pkt #%d" % (pktnumber+1))
-            time.sleep(1)
-            udpClientSock.sendto("0".encode(), (remoteIP,5000))
-            tcp_client_socket.sendall("0".encode())
-            time.sleep(1)
-            pktnumber += 1
-            continue
+    print('Sending Packets')
+    while (pktnumber < NumTimesToRun):
+        s = ''.join(random.choice(string.digits) for _ in range(pktsize))
+        udpClientSock.sendto(s.encode(), (remoteIP,5000))
+        tcp_client_socket.sendall("1".encode())
+        print("Sent Pkt #%d" % (pktnumber+1))
+        time.sleep(1)
+        udpClientSock.sendto("0".encode(), (remoteIP,5000))
+        tcp_client_socket.sendall("0".encode())
+        time.sleep(1)
+        pktnumber += 1
 
 # Device 2 is B
 elif username == 'b':
@@ -86,9 +84,9 @@ elif username == 'b':
     while True:
         data, client_addr = UDPServerSocket.recvfrom(pktsize)
         if data.decode()=='0':
-           tcp_client_socket.sendall(data)
-           print('0')
+            tcp_client_socket.sendall(data)
+            print('0')
         else:
-          tcp_client_socket.sendall("1".encode())
-          print('1')
-        pktnumber += 1
+            tcp_client_socket.sendall("1".encode())
+            print('1')
+            pktnumber += 1
