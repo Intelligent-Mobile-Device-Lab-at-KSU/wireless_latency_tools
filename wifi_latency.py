@@ -12,9 +12,9 @@
 
 # 1. Open Termux.
 # 2. Download the wireless_latency_tools git repo.
-# 3. python wifi_latency.py <a|b> <pktsize> <#ofpackets> <remoteIPofB>
-# 4. Example: python wifi_latency.py a 1 100 192.168.0.2, means: login as user A, send 1 byte 100 times to B (192.168.0.2)
-# 5. Example: python wifi_latency.py b 1 100, means: login as user B, get one-hundred packets of size one byte from A
+# 3. python wifi_latency.py <a|b> <pktsize> <#ofpackets> <IPaddress>
+# 4. Example: python wifi_latency.py a 1 100 192.168.0.2 192.168.0.4, means: login as user A (192.168.0.2), send 1 byte 100 times to B (192.168.0.4)
+# 5. Example: python wifi_latency.py b 1 100 192.168.0.4 192.168.0.2, means: login as user B, get one-hundred packets of size one byte from A
 
 import socket
 import sys
@@ -25,17 +25,12 @@ import threading
 import random
 import string
 
-hostname = socket.gethostname()
-local_ip = socket.gethostbyname(hostname)
-
-print(hostname)
-print(local_ip)
-
-if len(sys.argv) == 5:
+if len(sys.argv) == 6:
     username = sys.argv[1] # can only be a or b
     pktsize = int(sys.argv[2])
     NumTimesToRun = int(sys.argv[3])
-    remoteIP = sys.argv[4]
+    myIP = sys.argv[4]
+    remoteIP = sys.argv[5]
 elif sys.argv[1]=='a':
     print('Not enough arguments for user A, \nusage: python wifi_latency.py <a|b> <pktsize> <#ofpackets>')
     sys.exit(0)
@@ -43,8 +38,6 @@ else:
     username = sys.argv[1] # you are B
 
 pktnumber = 0
-
-B_addr = (remoteIP, 5000)
 
 udpClientSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -63,7 +56,7 @@ signal.signal(signal.SIGINT, signal_handler)
 
 if username == 'b':
   UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-  UDPServerSocket.bind((localIP, localPort))
+  UDPServerSocket.bind((myIP, 5000))
 
 # Device 1 is A
 if username == 'a':
@@ -74,11 +67,11 @@ if username == 'a':
         pktnumber = 0
         while (pktnumber < NumTimesToRun):
             s = ''.join(random.choice(string.digits) for _ in range(pktsize))
-            udpClientSock.sendto(s.encode(), B_addr)
+            udpClientSock.sendto(s.encode(), (remoteIP,5000))
             tcp_client_socket.sendall("1".encode())
             print("Sent Pkt #%d" % (pktnumber+1))
             time.sleep(1)
-            udpClientSock.sendto("0".encode(), peer_addr)
+            udpClientSock.sendto("0".encode(), (remoteIP,5000))
             tcp_client_socket.sendall("0".encode())
             time.sleep(1)
             pktnumber += 1
@@ -91,7 +84,7 @@ elif username == 'b':
     x=input("Press any key to receiving packets...")
     print('Listening for packets...')
     while True:
-        data, client_addr = udpClientSock.recvfrom(pktsize)
+        data, client_addr = UDPServerSocket.recvfrom(pktsize)
         if data.decode()=='0':
            tcp_client_socket.sendall(data)
            print('0')
